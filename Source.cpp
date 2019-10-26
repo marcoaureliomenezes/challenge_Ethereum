@@ -111,6 +111,19 @@ bool checkLine(vector<char> v1) {
 	}
 	return(true);
 }
+double solve_Unstacked(stack<int> numStack, stack<char> opStack) {
+	int val1, val2, conta;
+	char op;
+	val1 = numStack.top();
+	numStack.pop();
+	op = opStack.top();
+	opStack.pop();
+	val2 = numStack.top();
+	numStack.pop();
+	conta = operation(val2, val1, op);
+	cout << val1 << " " << op << " " << val2 << " = " << conta << endl;
+	return(conta);
+}
 int readLine(string input)
 {
 	vector<char> v1;
@@ -130,56 +143,87 @@ int readLine(string input)
 	stack<int> numStack2;
 	stack<char> opStack2;
 	int val1, val2, conta; char op;
-	
+	// Charging the stacks Operator and number with data from the vector v1
 	for (int i = 0; i < v1.size(); i++) {
+		// If the element v1[i] is one of these operators, it's stacked in the opStack
 		if (v1[i] == '(' || v1[i] == '+' || v1[i] == '-' || v1[i] == '*' || v1[i] == '/') {
 			opStack2.push(v1[i]);
+			
 		}
+		// If the element v1[i] is a number (0-9), it's transformed to an integer. 2 +3 -4 +5 -6
 		else if (isdigit(v1[i])) {
 			int number = int(v1[i]) - int('0');
-			//
-			if ((opStack2.size() != 0) && (opStack2.top() == '*' || opStack2.top() == '/')) {
-				int number = int(v1[i]) - int('0');
+			if (opStack2.size() != 0 && opStack2.top() == '-') {
+				opStack2.pop(); opStack2.push('+');
+				number = -number;
 				numStack2.push(number);
-				val1 = numStack2.top();				cout << val1 << " ";
-				numStack2.pop();
-				op = opStack2.top();				cout << op << " ";
+			}
+			// If the stack of operators is not empty and the last operator stacked is '*' or '/'
+			// a operation is made. For example, if the expression is '4*5*(2+1)', as the numbers
+			// and operators are stacked, it's recognized that the part '4*5' can be solved.
+			// Then it's solved and the result takes place '20*(2+1)'.
+			else if ((opStack2.size() != 0) && (opStack2.top() == '*' || opStack2.top() == '/')) {
+				val1 = number;				
+				op = opStack2.top();				
 				opStack2.pop();
-				val2 = numStack2.top();				cout << val2 << " ";
-				numStack2.pop();
-				conta = operation(val2, val1, op);	cout << " = " << conta << endl;
+				val2 = numStack2.top();				
+				numStack2.pop();	
+				conta = operation(val2, val1, op);	
+				cout << val1 << " " << op << " " << val2 << " = "<< conta << endl;
 				numStack2.push(conta);
 			}
-			//
-			else { numStack2.push(number);}
+			else {
+				numStack2.push(number);
+			}
 		}
 		else if (v1[i] == ')') {
-			while (opStack2.top() != '(') {
-				val1 = numStack2.top();
-				numStack2.pop();									cout << val1 << " ";
-				op = opStack2.top();
-				opStack2.pop();									cout << op << " ";
-				val2 = numStack2.top();
-				numStack2.pop();									cout << val2 << " ";
-				if (op == '-' || op == '/') {
-					conta = operation(val2, val1, op);				cout << " = " << conta << endl;
+			if (opStack2.top() == '(') {
+				opStack2.pop();
+				if ((opStack2.size() != 0) && (opStack2.top() == '*' || opStack2.top() == '/')) {
+					val1 = numStack2.top();
+					numStack2.pop();
+					op = opStack2.top();
+					opStack2.pop();
+					val2 = numStack2.top();
+					numStack2.pop();
+					conta = operation(val2, val1, op);
+					cout << val1 << " " << op << " " << val2 << " = " << conta << endl;
+					numStack2.push(conta);
 				}
-				else {
-					conta = operation(val1, val2, op);				cout << " = " << conta << endl;
-				}
-				numStack2.push(conta);
+
 			}
-			opStack2.pop();
+			else {
+				while (opStack2.top() != '(') {
+					val1 = numStack2.top();
+					numStack2.pop();
+					op = opStack2.top();
+					cout << op << endl;
+					opStack2.pop();
+					val2 = numStack2.top();
+					numStack2.pop();
+					if (op == '-' || op == '/') {
+						conta = operation(val2, val1, op);
+					}
+					else {
+						conta = operation(val1, val2, op);
+					}
+					cout << val1 << " " << op << " " << val2 << " = " << conta << endl;
+					numStack2.push(conta);
+				}
+				opStack2.pop();
+			}
+			
 		}
 	}
 	while (opStack2.size() > 0 && numStack2.size() > 1) {
 		val1 = numStack2.top();
-		numStack2.pop();									cout << val1 << " ";
+		numStack2.pop();
 		op = opStack2.top();
-		opStack2.pop();									cout << op << " ";
+		opStack2.pop();
 		val2 = numStack2.top();
-		numStack2.pop();									cout << val2 << " ";
-		conta = operation(val2, val1, op);				cout << " = " << conta << endl;
+		numStack2.pop();
+		conta = operation(val2, val1, op);
+		cout << val1 << " " << op << " " << val2 << " = " << conta << endl;
 		numStack2.push(conta);
 	}
 	int result = numStack2.top();
@@ -188,9 +232,24 @@ int readLine(string input)
 	return(result);
 }
 int main()	{
-	string input1 = "(4 + 5 * (7 - 3)) - 2";
-	string input2 = "4+5+7/2";
-	string input3 = "1-2*2/2+2-4";
-	string input4 = "-10";
-	cout << readLine(input1) << endl;
+	string input1 = "2 +3 -4 +5 -6";						cout << "teste1: " << (2 + 3 - 4 + 5 - 6) << endl; 
+	cout << " codigo: " << readLine(input1) << endl;
+	string input2 = "4/2+4*3+3-2+4*2/2";					cout << "teste2: " << (4 / 2 + 4 * 3 + 3 - 2 + 4 * 2 / 2) << endl;
+	cout << " codigo: " << readLine(input2) << endl;
+	string input3 = "(4-2)*(8/4) -1*6";						cout << "teste3: " << ((4 - 2) * (8 / 4) - 1 * 6) << endl;
+	cout << " codigo: " << readLine(input3) << endl;
+	string input4 = "(4)*(6)-4 +(2*3)/2";					cout << "teste4: " << ((4) * (6) - 4 + (2 * 3) / 2) << endl;
+	cout << " codigo: " << readLine(input4) << endl;
+	string input5 = "((4-2)*(6)-4)/2 -5";					cout << "teste5: " << (((4 - 2) * (6) - 4) / 2 - 5) << endl;
+	cout << " codigo: " << readLine(input5) << endl;
+	string input6 = "((5)) + 6 / 2 - 5 * (5 - 4) * 6 ";		cout << "teste6: " << ((5)) + 6 / 2 - 5 * (5 - 4) * 6 << endl;
+	cout << " codigo: " << readLine(input6) << endl;
+	string input7 = "((5))+6/2-5";
+	string input8 = "(4)*(6)-4 +2";
+	string input9 = "(4)*(6)-4 +2";
+	string input10 = "4+5+7/2";
+	string input11 = "2+3+(4)+6/2";
+	string input12 = "-10";
+	cout <<"codigo: " << readLine(input12) << endl;
+
 }
