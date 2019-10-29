@@ -1,7 +1,9 @@
 #include <iostream>
-#include "MathExpression.h"
+#include "../include/MathExpression.h"
+#include "gtest/gtest.h"
 
 int main()	{
+	
 	MathExpression operation;
 	std::string input = "";
 	std::cout << "Mode user can insert a input. Type 'quit' to get out!"<< std::endl;
@@ -42,4 +44,5 @@ int main()	{
 	// create console
 			 // make comments
 			 // write unit tests
+	return 0;
 }
