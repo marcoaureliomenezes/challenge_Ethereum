@@ -2,9 +2,8 @@
 #include <vector>
 #include <stack>
 #include <iostream>
-
+#include "windows.h"
 std::string op = "+-*/";
-
 int MathExpression::operation(int a, int b, char c) {
 	switch (c) {
 	case '+': return a + b;
@@ -24,8 +23,50 @@ int MathExpression::operation(int a, int b, char c) {
 		return -1;
 	}
 }
-bool MathExpression::checkLine(std::vector<char> v1) {
-	std::vector<char> vCheck; int checkPar = 0;
+std::vector<char> MathExpression::formatInput(std::string input)
+{
+	std::vector<char> v1; std::vector<char> v2;
+	// this first loop puts the string in a vector eliminating spaces
+	for (int i = 0; i < input.size(); i++) {
+		if (input[i] != ' ') {
+			v1.push_back(input[i]);
+		}
+	}
+	// Format 1: Simplifies consecutive signals of '-' and '+'
+	// Example: '1--1' is converted in '1+1' and '1+-+-+-1'
+	// is converted in '1-1'.
+	int i = 0;
+	while (i < v1.size()) {
+		if (v1[i] == '+' || v1[i] == '-') {
+			int count = 0;
+			int j = 0;
+			while (v1[i + j] == '+' || v1[i + j] == '-') {
+				if (v1[j + i] == '-') { count++; }
+				j++;
+			}
+			i = i + j;
+			if (count % 2 == 0) { v2.push_back('+'); }
+			else if (count % 2 != 0) { v2.push_back('-'); }
+		}
+		else { v2.push_back(v1[i]); i++; }
+	}
+	v1.clear();
+	for (int i = 0; i < v2.size(); i++) {
+		if (v2[i] == '+') {
+			if ((i == 0 || i == v2.size())) {}
+			else if (isdigit(v2[i - 1]) && (isdigit(v2[i + 1]) || v2[i + 1] == '(')) {
+				v1.push_back('+');
+			}
+		}
+		else { v1.push_back(v2[i]); }
+	}
+	return v1;
+}
+
+bool MathExpression::checkLine(std::vector<char> v1) 
+{
+	std::vector<char> vCheck; 
+	int checkPar = 0, errorSignal = 0;
 	try {
 		for (int i = 0; i < v1.size(); i++) {
 			if (v1[i] != '(' && v1[i] != ')') {
@@ -55,7 +96,7 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 	}
 	catch (int x) {
 		std::cout << "Error " << x << "  - Irregular use of parenthesis!" << std::endl;
-		return false;
+		errorSignal++;
 	}
 	try {
 		for (int i = 0; i < vCheck.size(); i++) {
@@ -70,7 +111,7 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 	}
 	catch (int x) {
 		std::cout << "Error " << x << "  - Irregular charactere!" << std::endl;
-		return false;
+		errorSignal++;;
 	}
 	// It checks if there's some literal integer bigger than 9.
 	try {
@@ -79,13 +120,16 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Literal integer bigger than 9!" << std::endl;
-		return false;
+		std::cout << "Error " << x << "  - literal is too large!" << std::endl;
+		errorSignal++;
 	}	 
 	try {
 		// It checks if the first value is a negative number.
 		// Example: '((-1)+1)'
 		if (vCheck[0] == '-') { throw 7; }
+		for (int i = 0; i < v1.size() - 1; i++) {
+			if (v1[i] == '(' && v1[i + 1] == '-') { throw 8; }
+		}
 		for (int i = 0; i < vCheck.size() - 1; i++) {
 			if (vCheck[i] == '*' || vCheck[i] == '/') {
 				// It checks if there's a negative number after
@@ -93,15 +137,10 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 				if (vCheck[i + 1] == '-') { throw 8; }
 			}		
 		}
-		for (int i = 0; i < v1.size() - 1; i++) {
-			if (v1[i] == '(' && v1[i + 1] == '-') {
-				throw(8);
-			}
-		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Literal negative!" << std::endl;
-		return false;
+		std::cout << "Error " << x << "  - negative literal!" << std::endl;
+		errorSignal++;
 	}
 	try {
 		// It checks if in first position there's operators '*' or '/'
@@ -122,12 +161,13 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 	}
 	catch (int x) {
 		std::cout << "Error " << x << "  - Operation makes no sense!" << std::endl;
-		return false;
+		errorSignal++;
 	}
-	// These consecultive oeprators are acceptables: (++; *+; /+; -+;--; +-)
-	return(true);
+	if (errorSignal > 0) { return false; } 
+	else				 { return(true); }
 }
-void MathExpression::solveOperation(std::stack<int>& numStack, std::stack<char>& opStack) {
+void MathExpression::solveOperation(std::stack<int>& numStack, std::stack<char>& opStack) 
+{
 	int val1, val2, conta; char op;
 	val1 = numStack.top();	numStack.pop();
 	op = opStack.top();		opStack.pop();
@@ -135,29 +175,15 @@ void MathExpression::solveOperation(std::stack<int>& numStack, std::stack<char>&
 	conta = MathExpression::operation(val2, val1, op);
 	numStack.push(conta);
 }
-int MathExpression::solveExpression(std::vector<char> v1) {
+int MathExpression::solveExpression(std::vector<char> v1) 
+{
 	std::stack<int> numStack; std::stack<char> opStack;
 	std::stack<int>* ptNumStack; std::stack<char>* ptOpStack;
 	ptNumStack = &numStack; ptOpStack = &opStack;
 	// Charging the stacks Operator and number with data from the vector v1
 	for (int i = 0; i < v1.size(); i++) {
-		// The first and second part are responsible to convert consecultive signals
-		// that are valid. Example: '2--2' is stacked as '2+2', '2---2' as '2-2'
-		// and '2-+-2' as '2+2'.
-		if (v1[i] == '-' && !opStack.empty())
-		{	// First part
-			if (opStack.top() == '-') { opStack.pop(); opStack.push('+'); }
-			else if (opStack.top() == '+') { opStack.push('-'); }
-			//		else if (opStack.top() == '(') { opStack.push('*'); numStack.push(-1); }
-			else { opStack.push(v1[i]); }
-		}
-		else if (v1[i] == '+' && !opStack.empty()) {
-			if (opStack.top() == '-') { opStack.push('-'); opStack.push('-'); }
-			
-			else { opStack.push(v1[i]); }
-		}
 		// If the element v1[i] is one of these operators, it's stacked in the opStack
-		else if (v1[i] == '(' || v1[i] == '-' || v1[i] == '+' || v1[i] == '*' || v1[i] == '/') { opStack.push(v1[i]); }
+		if (v1[i] == '(' || v1[i] == '-' || v1[i] == '+' || v1[i] == '*' || v1[i] == '/') { opStack.push(v1[i]); }
 		// If the element v1[i] is a number (0-9), it's transformed to an integer.
 		else if (isdigit(v1[i])) {
 			int number = int(v1[i]) - int('0');
@@ -213,15 +239,8 @@ int MathExpression::solveExpression(std::vector<char> v1) {
 	return(numStack.top());
 }
 int MathExpression::readLine(std::string input) {
-
-	std::vector<char> v1; std::vector<char> v2;
-	// this first loop puts the string in a vector eliminating spaces
-	for (int i = 0; i < input.size(); i++) {
-		if (input[i] != ' ') {
-			v1.push_back(input[i]);
-		}
-	}
-	// Check th integrity of the string parsed.
+	std::vector<char> v1;
+	v1 = MathExpression::formatInput(input);
 	bool check = MathExpression::checkLine(v1);
 	// If the integrity of the equation are violated, return -1.
 	if (check == false) { return(-1); }
