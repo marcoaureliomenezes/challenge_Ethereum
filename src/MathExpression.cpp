@@ -25,7 +25,6 @@ int MathExpression::operation(int a, int b, char c) {
 	}
 }
 bool MathExpression::checkLine(std::vector<char> v1) {
-
 	std::vector<char> vCheck; int checkPar = 0;
 	try {
 		for (int i = 0; i < v1.size(); i++) {
@@ -94,6 +93,11 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 				if (vCheck[i + 1] == '-') { throw 8; }
 			}		
 		}
+		for (int i = 0; i < v1.size() - 1; i++) {
+			if (v1[i] == '(' && v1[i + 1] == '-') {
+				throw(8);
+			}
+		}
 	}
 	catch (int x) {
 		std::cout << "Error " << x << "  - Literal negative!" << std::endl;
@@ -123,17 +127,14 @@ bool MathExpression::checkLine(std::vector<char> v1) {
 	// These consecultive oeprators are acceptables: (++; *+; /+; -+;--; +-)
 	return(true);
 }
-
 void MathExpression::solveOperation(std::stack<int>& numStack, std::stack<char>& opStack) {
 	int val1, val2, conta; char op;
 	val1 = numStack.top();	numStack.pop();
 	op = opStack.top();		opStack.pop();
 	val2 = numStack.top();	numStack.pop();
 	conta = MathExpression::operation(val2, val1, op);
-	std::cout << val2 << " " << op << " " << val1 << " = " << conta << ", ";
 	numStack.push(conta);
 }
-
 int MathExpression::solveExpression(std::vector<char> v1) {
 	std::stack<int> numStack; std::stack<char> opStack;
 	std::stack<int>* ptNumStack; std::stack<char>* ptOpStack;
@@ -147,16 +148,15 @@ int MathExpression::solveExpression(std::vector<char> v1) {
 		{	// First part
 			if (opStack.top() == '-') { opStack.pop(); opStack.push('+'); }
 			else if (opStack.top() == '+') { opStack.push('-'); }
-	//		else if (opStack.top() == '(') { opStack.push('*'); numStack.push(-1); }
-			else { opStack.push(v1[i]); }	
+			//		else if (opStack.top() == '(') { opStack.push('*'); numStack.push(-1); }
+			else { opStack.push(v1[i]); }
 		}
 		else if (v1[i] == '+' && !opStack.empty()) {
-			if (opStack.top() == '-') { opStack.push('-'); opStack.push('-');}
+			if (opStack.top() == '-') { opStack.push('-'); opStack.push('-'); }
+			
 			else { opStack.push(v1[i]); }
 		}
 		// If the element v1[i] is one of these operators, it's stacked in the opStack
-
-
 		else if (v1[i] == '(' || v1[i] == '-' || v1[i] == '+' || v1[i] == '*' || v1[i] == '/') { opStack.push(v1[i]); }
 		// If the element v1[i] is a number (0-9), it's transformed to an integer.
 		else if (isdigit(v1[i])) {
@@ -165,13 +165,11 @@ int MathExpression::solveExpression(std::vector<char> v1) {
 			// and negative number. Example: '1-1' is transformed on '1+(-1)'
 			// and the number (-1) is stacked.
 			if (opStack.size() != 0 && opStack.top() == '-') {
-				opStack.pop(); opStack.push('+');
+				
 				number = -number;
 				numStack.push(number);
+				opStack.pop(); opStack.push('+');
 			}
-			// If the last operator stacked is '*' or '/' and v1[i] is a number
-			// the operation is made. Example:'2*1*(1+1)', as the numbers it's recognized
-			// that '2*1' can be solved. Then the result is stacked.
 			else if ((opStack.size() != 0) && (opStack.top() == '*' || opStack.top() == '/')) {
 				numStack.push(number);
 				MathExpression::solveOperation(*ptNumStack, *ptOpStack);
@@ -188,8 +186,8 @@ int MathExpression::solveExpression(std::vector<char> v1) {
 			// Example: '3+3*(2)' is transformed in '3+3*2' and then '3+6'.
 			if (opStack.top() == '(') {
 				opStack.pop();
-				if ((opStack.size() != 0) && (opStack.top() == '*' || opStack.top() == '/' || opStack.top() == '-')) {
-					MathExpression::solveOperation(*ptNumStack, *ptOpStack);
+				if ((opStack.size() != 0) && (opStack.top() == '*' || opStack.top() == '/' || opStack.top() == '-' )) {
+					MathExpression::solveOperation(*ptNumStack, *ptOpStack);	
 				}
 			}
 			// If the parenthesis is just closed, all the operations, till the software
@@ -202,14 +200,13 @@ int MathExpression::solveExpression(std::vector<char> v1) {
 				opStack.pop();
 			}
 		}
-	}	//2 -+ 2
+	}
 		// after all the operations above there's no more high priority
 		// operations. Just simple sums. Example: 3+4+(-3)+13. There's also
 		// no parenthesis. The one used is just to represent that a subtraction
 		// was transformed in a sum of a positive with a negative number.
 		// Then, the last stage of the soluction of the expression is made and
 		// the result is the only number that is on top of the numStack.
-
 	while (!opStack.empty() && numStack.size() > 1) {
 		MathExpression::solveOperation(*ptNumStack, *ptOpStack);
 	}
@@ -217,7 +214,7 @@ int MathExpression::solveExpression(std::vector<char> v1) {
 }
 int MathExpression::readLine(std::string input) {
 
-	std::vector<char> v1; std::vector<char> vect;
+	std::vector<char> v1; std::vector<char> v2;
 	// this first loop puts the string in a vector eliminating spaces
 	for (int i = 0; i < input.size(); i++) {
 		if (input[i] != ' ') {
