@@ -14,8 +14,8 @@ public:
 	 *  If it's valid the result is calculated by the method solveExpression. 
 	 *  Otherwise it returns -1.
 	 *
-	 *	@param input The expression which the user wants to get the result.
-	 *	@return Result of mathematical expression, of integer type.
+	 *  @param input The expression which the user wants to get the result.
+	 *  @return Result of mathematical expression, of integer type.
 	 */
 	int readLine(std::string input);
 private:
@@ -91,30 +91,30 @@ private:
 	 *
 	 *  The validity of an input passed as vector of char is tested. Wether for any
 	 *  reasons it's not valid exceptions are generated and error messages are printed.
-	 *  * Error 1: If there's a parenthesis closed without that one has opened it.
-	 *    Example: '1*(1))'.
-	 *  * Error 2: If some parenthesis opened were closed.
-	 *    Example: '1+(1+(1)'.
-	 *  * Error 3: If a parenthesis was closed after an operator
-	 *    Example: '(1+)1'.
-	 *  * Error 4: If a parenthesis was opened after a number
-	 *    Example: '1(1+1)'.
-	 *  * Error 5: If there's a number after a parenthesis is closed. 
-	 *    Example: '(1+1)1'.
-	 *  * Error 6: If there's invalid characteres in the expression.
-	 *    Example: '(1@1)%1'.
-	 *  * Error 7: If there's some literal bigger than 9.
-	 *    Example: '10+1'.
-	 *  * Error 8: If the first value is a negative number.
-	 *    Example: '-1+1'.
-	 *  * Error 9: If there's some minus operator after the operators '/*('
-	 *    Example: '1/-1' or '1*(-1)'.
-	 *  * Error 10: If the first element is an operator '*' or '/'
-	 *    Example: '*1+1'.
-	 *  * Error 11: If the last element is an operator,
-	 *    Example: '1+1-'.
-	 *  * Error 12: If any operator is followed by '*' or '/'.
-	 *    Example: '1+(/1)'.
+	 *	* Error 1: If there's a parenthesis closed without that one has opened it.
+	 *	  Example: '1*(1))'.
+	 *	* Error 2: If some parenthesis opened were closed.
+	 *	  Example: '1+(1+(1)'.
+	 *	* Error 3: If a parenthesis was closed after an operator
+	 *	  Example: '(1+)1'.
+	 *	* Error 4: If a parenthesis was opened after a number
+	 *	  Example: '1(1+1)'.
+	 *	* Error 5: If there's a number after a parenthesis is closed. 
+	 *	  Example: '(1+1)1'.
+	 *	* Error 6: If there's invalid characteres in the expression.
+	 *	  Example: '(1@1)%1'.
+	 *	* Error 7: If there's some literal bigger than 9.
+	 *	  Example: '10+1'.
+	 *	* Error 8: If the first value is a negative number.
+	 *	  Example: '-1+1'.
+	 *	* Error 9: If there's some minus operator after the operators '/*('
+	 *	  Example: '1/-1' or '1*(-1)'.
+	 *	* Error 10: If the first element is an operator '*' or '/'
+	 *	  Example: '*1+1'.
+	 *	* Error 11: If the last element is an operator,
+	 *	  Example: '1+1-'.
+	 *	* Error 12: If any operator is followed by '*' or '/'.
+	 *	  Example: '1+(/1)'.
 	 *  @param v1: Vector containing the input provided after formatting.
 	 *  @return bool: True if the input is valid, false if it's not.
 	 */
