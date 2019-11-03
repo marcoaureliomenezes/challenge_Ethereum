@@ -65,7 +65,7 @@ private:
 	void solveOperation(std::stack<int>& numStack, std::stack<char>& opStack);
 	/**
 	 *  @brief Private method that solves an expression passed by a vector
-     *         and returns an integer.
+	 *         and returns an integer.
 	 *
 	 *  While it runs through the vector elements:
 	 * 	* If it's an operator, it is stacked on opStack.
@@ -115,6 +115,7 @@ private:
 	 *	  Example: '1+1-'.
 	 *	* Error 12: If any operator is followed by '*' or '/'.
 	 *	  Example: '1+(/1)'.
+	 *
 	 *  @param v1: Vector containing the input provided after formatting.
 	 *  @return bool: True if the input is valid, false if it's not.
 	 */
