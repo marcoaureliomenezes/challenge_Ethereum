@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 MathExpression operation;
-// Tests sugested by Ethereum
+// Tests suggested by Ethereum
 TEST(Ethereum_Tests, test1) {
 	std::string input = "(4 + 5 * (7 - 3)) - 2";
 	int expectResult = (4 + 5 * (7 - 3)) - 2;
