@@ -12,8 +12,7 @@ int MathExpression::readLine(string input)  {
 	bool check = MathExpression::checkLine(v1);
 	if (check == false) { 
 		return(-1); 
-	}
-	else { 
+	} else { 
 		return (MathExpression::solveExpression(v1)); 
 	}
 }
@@ -64,8 +63,7 @@ vector<char> MathExpression::formatInput(string input)  {
 			i = i + j;
 			if (count % 2 == 0) { v2.push_back('+'); }
 			else if (count % 2 != 0) { v2.push_back('-'); }
-		}
-		else { v2.push_back(v1[i]); i++; }
+		} else { v2.push_back(v1[i]); i++; }
 	}
 	v1.clear();
 	// Removes useless operators of '+'.
@@ -75,8 +73,7 @@ vector<char> MathExpression::formatInput(string input)  {
 			else if (isdigit(v2[i - 1]) && (isdigit(v2[i + 1]) || v2[i + 1] == '(')) {
 				v1.push_back('+');
 			}
-		}
-		else { v1.push_back(v2[i]); }
+		} else { v1.push_back(v2[i]); }
 	}
 	return v1;
 }
@@ -137,7 +134,7 @@ bool MathExpression::checkLine(vector<char> v1)  {
 	vector<char>::iterator itr;
 	int checkPar = 0, errorSignal = 0;
 	try {
-		for (char elem:v1) {			// ******************************************
+		for (char elem:v1) {
 			if (elem != '(' && elem != ')') {
 				vCheck.push_back(elem);
 			}
@@ -149,7 +146,7 @@ bool MathExpression::checkLine(vector<char> v1)  {
 		// If all parenthes were closed.
 		if (checkPar != 0) { throw 2; }
 		
-		for (itr = v1.begin(); itr != v1.end() - 1; itr++) {	// ******************************************
+		for (itr = v1.begin(); itr != v1.end() - 1; itr++) {
 			for (char oper:op) {
 				// Operator before parenthesis being closed
 				if (*itr == oper && *(itr+1) == ')') { throw 3; }
@@ -165,7 +162,7 @@ bool MathExpression::checkLine(vector<char> v1)  {
 		errorSignal++;
 	}
 	try {
-		for (char elem:vCheck) { // ******************************************
+		for (char elem:vCheck) {
 			// Invalid operators.
 			if (!isdigit(elem)) {
 				if (elem != '+' and elem != '-' and elem != '*' and elem != '/') {
@@ -180,7 +177,7 @@ bool MathExpression::checkLine(vector<char> v1)  {
 	}
 	// Literal integer bigger than 9.
 	try {
-		for (itr = v1.begin(); itr != v1.end() - 1; itr++) {		// ******************************************
+		for (itr = v1.begin(); itr != v1.end() - 1; itr++) {
 			if (isdigit(*itr) && isdigit(*(itr+1))) { throw 7; }
 		}
 	}
@@ -190,7 +187,7 @@ bool MathExpression::checkLine(vector<char> v1)  {
 	}	 
 	try {
 		if (vCheck[0] == '-') { throw 8; }
-		for (itr = v1.begin(); itr != v1.end()-1; itr++) {	// ******************************************
+		for (itr = v1.begin(); itr != v1.end()-1; itr++) {
 			if (*itr == '(' || *itr == '*' || *itr == '/') {
 				if( *(itr+1) == '-') { throw 9; }
 			}
@@ -207,7 +204,7 @@ bool MathExpression::checkLine(vector<char> v1)  {
 			// Any operator in last position.
 			if (vCheck[vCheck.size() - 1] == oper) { throw 11; }
 			// Operators '*' or '/' after any operator.
-			for (itr = vCheck.begin(); itr != vCheck.end()-1; itr++) { // ******************************************
+			for (itr = vCheck.begin(); itr != vCheck.end()-1; itr++) {
 				if (*itr == oper) {
 					if (*(itr+1) == '*' || *(itr+1) == '/') { throw 12; }
 				}
