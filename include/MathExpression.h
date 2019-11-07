@@ -2,6 +2,7 @@
 #include <vector>
 #include <stack>
 #include <iostream>
+using namespace std;
 
 class MathExpression{
 public:
@@ -17,7 +18,7 @@ public:
 	 *  @param input The expression which the user wants to get the result.
 	 *  @return Result of mathematical expression, of integer type.
 	 */
-	int readLine(std::string input);
+	int readLine(string input);
 private:
 	/** 
 	 *  @brief Private method that solve a simple mathematical operation.
@@ -45,7 +46,7 @@ private:
 	 *  @param input The string containing the mathematical expression.
 	 *  @return Vector of the type char, containing the input formatted.
 	 */
-	std::vector<char> formatInput(std::string input);
+	std::vector<char> formatInput(string input);
 	/** 
 	 *  @brief Private method that uses the stacks numStack and opStack
 	 *         from the method solveExpression to solve an operation.
@@ -62,7 +63,7 @@ private:
 	 *  @param &opStack: Address of the stack of operators in solveExpression method.
 	 *  @return Void.
 	 */
-	void solveOperation(std::stack<int>& numStack, std::stack<char>& opStack);
+	void solveOperation(stack<int>& numStack, stack<char>& opStack);
 	/**
 	 *  @brief Private method that solves an expression passed by a vector
 	 *         and returns an integer.
@@ -85,7 +86,7 @@ private:
 	 *  @param v1: Vector containing the input provided after formatting.
 	 *  @return int: Result of the mathematical expressin on top of numStack.
 	 */
-	int solveExpression(std::vector<char> v1);
+	int solveExpression(vector<char> v1);
 	/** 
 	 *  @brief Private method that checks if a input passed as parameter is valid.
 	 *
@@ -119,5 +120,5 @@ private:
 	 *  @param v1: Vector containing the input provided after formatting.
 	 *  @return bool: True if the input is valid, false if it's not.
 	 */
-	bool checkLine(std::vector<char> v1);
+	bool checkLine(vector<char> v1);
 };

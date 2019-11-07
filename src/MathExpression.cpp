@@ -2,10 +2,12 @@
 #include <vector>
 #include <stack>
 #include <iostream>
+
+using namespace std;
 std::string op = "+-*/";
 
-int MathExpression::readLine(std::string input)  {
-	std::vector<char> v1;
+int MathExpression::readLine(string input)  {
+	vector<char> v1;
 	v1 = MathExpression::formatInput(input);
 	bool check = MathExpression::checkLine(v1);
 	if (check == false) { 
@@ -25,21 +27,21 @@ int MathExpression::operation(int a, int b, char c)  {
 			if (b == 0) { throw 0; }
 		}
 		catch (int x) {
-			std::cout << "Error " << x << "  - Division by 0." << std::endl;
+			cout << "Error " << x << "  - Division by 0." << endl;
 			return -1;
 		}
 		return a / b;
 	default:
-		std::cout << "This operator is invalid" << std::endl;
+		cout << "This operator is invalid" << endl;
 		return -1;
 	}
 }
-std::vector<char> MathExpression::formatInput(std::string input)  {	
+vector<char> MathExpression::formatInput(string input)  {	
 	// Eliminates spaces from the string.
-	std::vector<char> v1; std::vector<char> v2;
-	for (int i = 0; i < input.size(); i++) {
-		if (input[i] != ' ') {
-			v2.push_back(input[i]);
+	vector<char> v1; vector<char> v2;
+	for (char i:input) {
+		if (i != ' ') {
+			v2.push_back(i);
 		}
 	}
 	// Simplifies consecultive operators of '+' and '-'.
@@ -78,34 +80,37 @@ std::vector<char> MathExpression::formatInput(std::string input)  {
 	}
 	return v1;
 }
-void MathExpression::solveOperation(std::stack<int>& numStack, std::stack<char>& opStack)  {
-	int val1, val2, result; char op;
+void MathExpression::solveOperation(stack<int>& numStack, stack<char>& opStack)  {
+	int val1, val2, result; 
+	char op;
 	val1 = numStack.top();	numStack.pop();
 	op = opStack.top();		opStack.pop();
 	val2 = numStack.top();	numStack.pop();
+
 	result = MathExpression::operation(val2, val1, op);
 	numStack.push(result);
 }
-int MathExpression::solveExpression(std::vector<char> v1)  {
-	std::stack<int> numStack; std::stack<char> opStack;
-	std::stack<int>* ptNumStack; std::stack<char>* ptOpStack;
+int MathExpression::solveExpression(vector<char> v1)  {
+	stack<int> numStack; stack<char> opStack;
+	stack<int>* ptNumStack; stack<char>* ptOpStack;
 	ptNumStack = &numStack; ptOpStack = &opStack;
-	for (int i = 0; i < v1.size(); i++) {
+	vector<char>::iterator itr;
+	for (vector<char>::iterator itr = v1.begin(); itr != v1.end(); ++itr) {
 		for (int j = 0; j < op.size(); j++) {
-			if (v1[i] == op[j]) {
-				opStack.push(v1[i]);
+			if (*itr == op[j]) {
+				opStack.push(*itr);
 				break;
 			}
 		}
-		if (v1[i] == '(') { opStack.push(v1[i]); }
-		if (isdigit(v1[i])) {
-			int number = int(v1[i]) - int('0');
+		if (*itr == '(') { opStack.push(*itr); }
+		if (isdigit(*itr)) {
+			int number = int(*itr) - int('0');
 			numStack.push(number);
 			if ((opStack.size() != 0) && (opStack.top() == '*' || opStack.top() == '/')) {
 				MathExpression::solveOperation(*ptNumStack, *ptOpStack);
 			}
 		}
-		else if (v1[i] == ')') {
+		else if (*itr == ')') {
 			if (opStack.top() != '(') {
 				while (opStack.top() != '(') {
 					solveOperation(*ptNumStack, *ptOpStack);
@@ -117,7 +122,7 @@ int MathExpression::solveExpression(std::vector<char> v1)  {
 			}
 		}
 		if (opStack.size() != 0 && opStack.top() == '-') {
-			if (i < v1.size() - 1 && (v1[i + 1] == '+' || v1[i + 1] == '-')) {
+			if (itr < v1.end()-1 && ( *(itr+1) == '+' || *(itr+1) == '-')) {
 				MathExpression::solveOperation(*ptNumStack, *ptOpStack);
 			}
 		}
@@ -127,88 +132,90 @@ int MathExpression::solveExpression(std::vector<char> v1)  {
 	}
 	return(numStack.top());
 }
-bool MathExpression::checkLine(std::vector<char> v1)  {
-	std::vector<char> vCheck; 
+bool MathExpression::checkLine(vector<char> v1)  {
+	vector<char> vCheck; 
+	vector<char>::iterator itr;
 	int checkPar = 0, errorSignal = 0;
 	try {
-		for (int i = 0; i < v1.size(); i++) {
-			if (v1[i] != '(' && v1[i] != ')') {
-				vCheck.push_back(v1[i]);
+		for (char elem:v1) {			// ******************************************
+			if (elem != '(' && elem != ')') {
+				vCheck.push_back(elem);
 			}
-			if (v1[i] == '(') { checkPar++; }
-			if (v1[i] == ')') { checkPar--; }
+			if (elem == '(') { checkPar++; }
+			if (elem == ')') { checkPar--; }
 			// Parenthesis being closed without that one has been opened.
 			if (checkPar < 0) { throw 1; }
 		}
 		// If all parenthes were closed.
 		if (checkPar != 0) { throw 2; }
-		for (int i = 0; i < v1.size() - 1; i++) {
-			for (int j = 0; j < op.size(); j++) {
+		
+		for (itr = v1.begin(); itr != v1.end() - 1; itr++) {	// ******************************************
+			for (char oper:op) {
 				// Operator before parenthesis being closed
-				if (v1[i] == op[j] && v1[i + 1] == ')') { throw 3; }
+				if (*itr == oper && *(itr+1) == ')') { throw 3; }
 			}
 			// Number before parenthesis being opened.
-			if (isdigit(v1[i]) && v1[i + 1] == '(') { throw 4; }
+			if (isdigit(*itr) && *(itr+1) == '(') { throw 4; }
 			// Number after parenthesis being closed.
-			if (v1[i] == ')' && isdigit(v1[i + 1])) { throw 5; }
+			if (*itr == ')' && isdigit(*(itr+1))) { throw 5; }
 		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Irregular use of parenthesis!" << std::endl;
+		cout << "Error " << x << "  - Irregular use of parenthesis!" << endl;
 		errorSignal++;
 	}
 	try {
-		for (int i = 0; i < vCheck.size(); i++) {
+		for (char elem:vCheck) { // ******************************************
 			// Invalid operators.
-			if (!isdigit(vCheck[i])) {
-				if (vCheck[i] != '+' && vCheck[i] != '-' && vCheck[i] != '*' && vCheck[i] != '/') {
+			if (!isdigit(elem)) {
+				if (elem != '+' and elem != '-' and elem != '*' and elem != '/') {
 					throw 6;
 				}
 			}
 		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Irregular charactere!" << std::endl;
+		cout << "Error " << x << "  - Irregular charactere!" << endl;
 		errorSignal++;
 	}
 	// Literal integer bigger than 9.
 	try {
-		for (int i = 0; i < v1.size() - 1; i++) {
-			if (isdigit(v1[i]) && isdigit(v1[i + 1])) { throw 7; }
+		for (itr = v1.begin(); itr != v1.end() - 1; itr++) {		// ******************************************
+			if (isdigit(*itr) && isdigit(*(itr+1))) { throw 7; }
 		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Literal is too large!" << std::endl;
+		cout << "Error " << x << "  - Literal is too large!" << endl;
 		errorSignal++;
 	}	 
 	try {
 		if (vCheck[0] == '-') { throw 8; }
-		for (int i = 0; i < v1.size() - 1; i++) {
-			if (v1[i] == '(' || v1[i] == '*' || v1[i] == '/') {
-				if (v1[i + 1] == '-') { throw 9; }
+		for (itr = v1.begin(); itr != v1.end()-1; itr++) {	// ******************************************
+			if (*itr == '(' || *itr == '*' || *itr == '/') {
+				if( *(itr+1) == '-') { throw 9; }
 			}
 		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Negative literal!" << std::endl;
+		cout << "Error " << x << "  - Negative literal!" << endl;
 		errorSignal++;
 	}
 	try {
 		// Operators '*' or '/' in first position.
 		if (vCheck[0] == '*' || vCheck[0] == '/') { throw 10; }
-		for (int i = 0; i < op.size(); i++) {
+		for (char oper:op) {
 			// Any operator in last position.
-			if (vCheck[vCheck.size() - 1] == op[i]) { throw 11; }
+			if (vCheck[vCheck.size() - 1] == oper) { throw 11; }
 			// Operators '*' or '/' after any operator.
-			for (int j = 0; j < vCheck.size() - 1; j++) {
-				if (vCheck[j] == op[i]) {
-					if (vCheck[j + 1] == '*' || vCheck[j + 1] == '/') { throw 12; }
+			for (itr = vCheck.begin(); itr != vCheck.end()-1; itr++) { // ******************************************
+				if (*itr == oper) {
+					if (*(itr+1) == '*' || *(itr+1) == '/') { throw 12; }
 				}
 			}
 		}
 	}
 	catch (int x) {
-		std::cout << "Error " << x << "  - Operation makes no sense!" << std::endl;
+		cout << "Error " << x << "  - Operation makes no sense!" << endl;
 		errorSignal++;
 	}
 	// If at least one exception has been executed, returns false.
