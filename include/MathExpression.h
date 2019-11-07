@@ -104,7 +104,7 @@ private:
 	 *	  Example: '(1+1)1'.
 	 *	* Error 6: If there's invalid characteres in the expression.
 	 *	  Example: '(1@1)%1'.
-	 *	* Error 7: If there's some literal bigger than 9.
+	 *	* Error 7: If there's some literal greater than 9.
 	 *	  Example: '10+1'.
 	 *	* Error 8: If the first value is a negative number.
 	 *	  Example: '-1+1'.

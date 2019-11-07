@@ -220,5 +220,5 @@ bool MathExpression::checkLine(vector<char> v1)  {
 	}
 	// If at least one exception has been executed, returns false.
 	if (errorSignal > 0) { return false; } 
-	else				 { return(true); }
+	else                 { return(true); }
 }
